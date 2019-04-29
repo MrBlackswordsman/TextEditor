@@ -16,6 +16,10 @@ onready var text_edit = $MiddleBar/TextEdit
 onready var letter_count = $BottomBar/HBoxContainer/LetterCount
 onready var line_count = $BottomBar/HBoxContainer/LineCount
 
+var themes = {}
+var themes_list = []
+var themes_dir = "res://themes/"
+
 var file_popup = null
 var edit_popup = null
 var options_popup = null
@@ -106,17 +110,17 @@ func populate_theme_menu():
 	theme_popup = theme_menu.get_popup()
 	theme_popup.connect("id_pressed", self, "_on_theme_menu_item_pressed")
 	
-	theme_popup.add_check_item("White Theme", 0)
-	if App.data["Settings"]["Current_Theme"] == "White Theme":
-		theme_popup.set_item_checked(0, true)
-	else:
-		theme_popup.set_item_checked(0, false)
+	themes_list = get_files_in_directory(themes_dir)
 	
-	theme_popup.add_check_item("Grey Theme", 1)
-	if App.data["Settings"]["Current_Theme"] == "Grey Theme":
-		theme_popup.set_item_checked(1, true)
-	else:
-		theme_popup.set_item_checked(1, false)
+	for i in themes_list.size():
+		themes[i] = str(themes_list[i].replace("_", " ").replace(".tres", ""))
+	
+	for i in themes.size():
+		theme_popup.add_check_item(str(themes[i].replace("_", " ").replace(".tres", "")), i)
+		
+		match theme_popup.get_item_id(i):
+			i:
+				theme_popup.set_item_checked(i, App.data["Settings"]["Current_Theme"] == theme_popup.get_item_text(i))
 	
 	theme_popup.rect_min_size = Vector2(200, 30)
 
@@ -128,11 +132,32 @@ func populate_help_menu():
 	
 	help_popup.rect_min_size = Vector2(200, 30)
 
+func get_files_in_directory(path):
+	var files = []
+	var dir = Directory.new()
+	dir.open(path)
+	dir.list_dir_begin()
+	
+	while true:
+		var file = dir.get_next()
+		if file == "":
+			break
+			
+		elif not file.begins_with("."):
+			files.append(file)
+	
+	dir.list_dir_end()
+	
+	return files
+
 func new_file():
-	text_edit.text = ""
-	App.current_files = "Untitled"
-	App.update_window_title(current_tab)
-	$BottomBar/LineCount.text = "Lines: " + str(get_node("MiddleBar/Untitled"+str(current_tab)).get_line_count())
+	tab_count_id += 1
+	create_new_tab("Untitled", tab_count_id)
+	
+	get_node("MiddleBar/"+App.current_files[tab_count_id]).show()
+	
+	tabs.current_tab = tab_count_id
+	update_editor_tabs()
 
 func save_file():
 	if $OpenFileDialog.current_file == "":
@@ -302,17 +327,16 @@ func _on_options_menu_item_pressed(id):
 	App.save_data()
 
 func _on_theme_menu_item_pressed(id):
-	match id:
-		0:
-			App.data["Settings"]["Current_Theme"] = "White Theme"
-			$"/root/Main".theme = load("res://themes/White_Theme.tres")
-			theme_popup.set_item_checked(0, true)
-			theme_popup.set_item_checked(1, false)
-		1:
-			App.data["Settings"]["Current_Theme"] = "Grey Theme"
-			$"/root/Main".theme = load("res://themes/Grey_Theme.tres")
-			theme_popup.set_item_checked(0, false)
-			theme_popup.set_item_checked(1, true)
+	for i in themes.size():
+		match id:
+			i:
+				App.data["Settings"]["Current_Theme"] = theme_popup.get_item_text(i)
+				
+				$"/root/Main".theme = load("res://themes/"+themes_list[i])
+				theme_popup.set_item_checked(i, (App.data["Settings"]["Current_Theme"] == theme_popup.get_item_text(i)))
+		
+		for j in theme_popup.get_item_count():
+			theme_popup.set_item_checked(j, (App.data["Settings"]["Current_Theme"] == theme_popup.get_item_text(j)))
 	
 	App.save_data()
 

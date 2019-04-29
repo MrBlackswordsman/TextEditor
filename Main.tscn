@@ -303,7 +303,6 @@ FreeFont:
 
 Portions of this software are copyright © <year> The FreeType Project (www.freetype.org). All rights reserved."
 autowrap = true
-
 [connection signal="tab_changed" from="MiddleBar/Tabs" to="." method="_on_Tabs_tab_changed"]
 [connection signal="tab_clicked" from="MiddleBar/Tabs" to="." method="_on_Tabs_tab_clicked"]
 [connection signal="tab_close" from="MiddleBar/Tabs" to="." method="_on_Tabs_tab_close"]
