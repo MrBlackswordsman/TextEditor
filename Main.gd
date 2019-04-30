@@ -16,9 +16,9 @@ onready var text_edit = $MiddleBar/TextEdit
 onready var letter_count = $BottomBar/HBoxContainer/LetterCount
 onready var line_count = $BottomBar/HBoxContainer/LineCount
 
+var themes_dir_internal = "res://themes/"
+var themes_dir_external = "user://themes/"
 var themes = {}
-var themes_list = []
-var themes_dir = "res://themes/"
 
 var file_popup = null
 var edit_popup = null
@@ -110,13 +110,20 @@ func populate_theme_menu():
 	theme_popup = theme_menu.get_popup()
 	theme_popup.connect("id_pressed", self, "_on_theme_menu_item_pressed")
 	
-	themes_list = get_files_in_directory(themes_dir)
+	var dir = Directory.new()
+	if dir.dir_exists(themes_dir_external):
+		print("Found Theme directory.")
+	else:
+		print("Created Theme directory.")
+		dir.make_dir(themes_dir_external)
 	
-	for i in themes_list.size():
-		themes[i] = str(themes_list[i].replace("_", " ").replace(".tres", ""))
+	themes = App.merge_dictionary(get_files_in_directory(themes_dir_internal), get_files_in_directory(themes_dir_external))
+	
+	print(themes)
 	
 	for i in themes.size():
-		theme_popup.add_check_item(str(themes[i].replace("_", " ").replace(".tres", "")), i)
+		var theme_names = themes.keys()
+		theme_popup.add_check_item(theme_names[i], i)
 		
 		match theme_popup.get_item_id(i):
 			i:
@@ -133,18 +140,21 @@ func populate_help_menu():
 	help_popup.rect_min_size = Vector2(200, 30)
 
 func get_files_in_directory(path):
-	var files = []
+	var files = {}
 	var dir = Directory.new()
 	dir.open(path)
 	dir.list_dir_begin()
 	
+	var count = 0
 	while true:
 		var file = dir.get_next()
 		if file == "":
 			break
 			
 		elif not file.begins_with("."):
-			files.append(file)
+			var names = file.replace("_", " ").replace(".tres", "")
+			files[names] = path+file
+			count += 1
 	
 	dir.list_dir_end()
 	
@@ -328,11 +338,12 @@ func _on_options_menu_item_pressed(id):
 
 func _on_theme_menu_item_pressed(id):
 	for i in themes.size():
+		var list_name = themes.keys()
 		match id:
 			i:
 				App.data["Settings"]["Current_Theme"] = theme_popup.get_item_text(i)
 				
-				$"/root/Main".theme = load("res://themes/"+themes_list[i])
+				$"/root/Main".theme = load(themes[list_name[i]])
 				theme_popup.set_item_checked(i, (App.data["Settings"]["Current_Theme"] == theme_popup.get_item_text(i)))
 		
 		for j in theme_popup.get_item_count():

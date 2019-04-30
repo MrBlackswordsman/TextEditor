@@ -39,6 +39,12 @@ func _ready():
 #func _process(delta):
 #	pass
 
+func merge_dictionary(dict_1, dict_2):
+	for key in dict_2:
+		dict_1[key] = dict_2[key]
+	
+	return dict_1
+
 func update_window_title(tab_id):
 	if current_files.size() <= 0:
 		OS.set_window_title(app_name + " | " + "Untitled")
