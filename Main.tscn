@@ -126,10 +126,6 @@ margin_right = -5.0
 margin_bottom = 2.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-custom_fonts/font = ExtResource( 3 )
-custom_colors/caret_color = Color( 0.223529, 0.215686, 0.215686, 1 )
-custom_colors/font_color_selected = Color( 0.0784314, 0.0666667, 0.0666667, 1 )
-custom_colors/font_color = Color( 0, 0, 0, 1 )
 caret_blink = true
 
 [node name="NewTabButton" type="Button" parent="MiddleBar"]
@@ -162,16 +158,16 @@ anchor_bottom = 1.0
 alignment = 2
 
 [node name="LetterCount" type="Label" parent="BottomBar/HBoxContainer"]
-margin_left = 770.0
+margin_left = 757.0
 margin_right = 895.0
-margin_bottom = 25.0
+margin_bottom = 28.0
 rect_min_size = Vector2( 125, 0 )
 text = "Characters: 0"
 
 [node name="LineCount" type="Label" parent="BottomBar/HBoxContainer"]
 margin_left = 899.0
 margin_right = 1024.0
-margin_bottom = 25.0
+margin_bottom = 28.0
 rect_min_size = Vector2( 125, 0 )
 text = "Lines: 0"
 
@@ -202,8 +198,8 @@ margin_right = 375.0
 margin_bottom = 212.5
 resizable = true
 access = 2
-current_dir = "E:/Google Drive/Game Dev/Projects/Godot/Text Editor"
-current_path = "E:/Google Drive/Game Dev/Projects/Godot/Text Editor/"
+current_dir = "D:/Google Drive/Game Dev/Projects/Godot/Text Editor"
+current_path = "D:/Google Drive/Game Dev/Projects/Godot/Text Editor/"
 
 [node name="AboutMenuDialog" type="WindowDialog" parent="."]
 editor/display_folded = true
