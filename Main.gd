@@ -1,11 +1,5 @@
 extends Control
 
-onready var file_menu = $TopBar/MenuBar/FileMenu
-onready var edit_menu = $TopBar/MenuBar/EditMenu
-onready var options_menu = $TopBar/MenuBar/OptionsMenu
-onready var theme_menu = $TopBar/MenuBar/ThemeMenu
-onready var help_menu = $TopBar/MenuBar/HelpMenu
-
 onready var open_file_window = $OpenFileDialog
 onready var save_file_window = $SaveFileDialog
 onready var about_menu_window = $AboutMenuDialog
@@ -20,30 +14,18 @@ var themes_dir_internal = "res://themes/"
 var themes_dir_external = "user://themes/"
 var themes = {}
 
-var file_popup = null
-var edit_popup = null
-var options_popup = null
-var theme_popup = null
-var help_popup = null
-
 var tab_count_id = 0
 var current_tab = 0
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	theme = load(themes[App.data["Settings"]["Current_Theme"]])
+	yield(get_tree(), "idle_frame")
 	get_tree().connect("files_dropped", self, "_on_files_dropped_into_window")
 	
-	yield(get_tree(), "idle_frame")
 	$CreditsDialog/ScrollContainer.scroll_vertical = 1500
 	
 	$OpenFileDialog.set_filters(App.FILE_TYPES)
-	tabs.set_select_with_rmb(true)
-	
-	populate_file_menu()
-	populate_edit_menu()
-	populate_options_menu()
-	populate_theme_menu()
-	populate_help_menu()
 	
 	update_editor_tabs()
 	update_text_stats()
@@ -51,6 +33,7 @@ func _ready():
 	open_file_window.set_current_dir("/")
 	open_file_window.set_current_file("/")
 	open_file_window.set_current_path("/")
+	
 	save_file_window.set_current_dir("/")
 	save_file_window.set_current_file("/")
 	save_file_window.set_current_path("/")
@@ -58,86 +41,6 @@ func _ready():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
 #	pass
-
-func populate_file_menu():
-	file_popup = file_menu.get_popup()
-	file_popup.connect("id_pressed", self, "_on_file_menu_item_pressed")
-	
-	for i in App.FILE_MENU_OPTIONS:
-		file_popup.add_item(i)
-	
-	file_popup.set_item_as_separator(2, true)
-	file_popup.set_item_as_separator(5, true)
-	
-	file_popup.rect_min_size = Vector2(200, 30)
-	#file_popup.set_item_shortcut(0, menu_shortcut(KEY_N))
-	#file_popup.set_item_shortcut(1, menu_shortcut(KEY_O))
-
-func populate_edit_menu():
-	edit_popup = edit_menu.get_popup()
-	edit_popup.connect("id_pressed", self, "_on_edit_menu_item_pressed")
-	
-	for i in App.EDIT_MENU_OPTIONS:
-		edit_popup.add_item(i)
-		
-	
-	edit_popup.set_item_as_separator(3, true)
-	edit_popup.set_item_as_separator(6, true)
-	
-	edit_popup.rect_min_size = Vector2(200, 30)
-
-func populate_options_menu():
-	options_popup = options_menu.get_popup()
-	options_popup.connect("id_pressed", self, "_on_options_menu_item_pressed")
-	
-	for i in App.OPTIONS_MENU_OPTIONS:
-		options_popup.add_check_item(i)
-	
-	options_popup.set_item_as_checkable(4, false)
-	options_popup.set_item_as_separator(4, true)
-	
-	options_popup.set_item_checked(0, App.data["Settings"]["Fullscreen"])
-	options_popup.set_item_checked(1, App.data["Settings"]["Maximized"])
-	options_popup.set_item_checked(2, App.data["Settings"]["Always_on_Top"])
-	options_popup.set_item_checked(3, App.data["Settings"]["Keep_Screen_On"])
-	
-	options_popup.set_item_checked(5, App.data["Settings"]["Show_Line_Numbers"])
-	options_popup.set_item_checked(6, App.data["Settings"]["Enable_Word_Wrap"])
-	
-	options_popup.rect_min_size = Vector2(200, 30)
-
-func populate_theme_menu():
-	theme_popup = theme_menu.get_popup()
-	theme_popup.connect("id_pressed", self, "_on_theme_menu_item_pressed")
-	
-	var dir = Directory.new()
-	if dir.dir_exists(themes_dir_external):
-		print("Found Theme directory.")
-	else:
-		print("Created Theme directory.")
-		dir.make_dir(themes_dir_external)
-	
-	themes = App.merge_dictionary(get_files_in_directory(themes_dir_internal), get_files_in_directory(themes_dir_external))
-	
-	print(themes)
-	
-	for i in themes.size():
-		var theme_names = themes.keys()
-		theme_popup.add_check_item(theme_names[i], i)
-		
-		match theme_popup.get_item_id(i):
-			i:
-				theme_popup.set_item_checked(i, App.data["Settings"]["Current_Theme"] == theme_popup.get_item_text(i))
-	
-	theme_popup.rect_min_size = Vector2(200, 30)
-
-func populate_help_menu():
-	help_popup = help_menu.get_popup()
-	help_popup.connect("id_pressed", self, "_on_about_menu_item_pressed")
-	
-	help_popup.add_item("About", 0)
-	
-	help_popup.rect_min_size = Vector2(200, 30)
 
 func get_files_in_directory(path):
 	var files = {}
@@ -273,88 +176,6 @@ func _on_files_dropped_into_window(files, screen):
 		App.current_file_name = open_file_window.get_current_file().replace(".txt", "")
 		App.current_files[current_tab] = App.current_file_name
 		file.close()
-
-func _on_file_menu_item_pressed(id):
-	match id:
-		0:
-			new_file()
-		1:
-			open_file_window.popup()
-		3:
-			save_file()
-		4:
-			save_file_window.popup()
-		6:
-			get_tree().quit()
-
-func _on_edit_menu_item_pressed(id):
-	match id:
-		0:
-			get_node("MiddleBar/Untitled"+str(tabs.get_current_tab())).cut()
-		1:
-			get_node("MiddleBar/Untitled"+str(tabs.get_current_tab())).copy()
-		2:
-			get_node("MiddleBar/Untitled"+str(tabs.get_current_tab())).paste()
-		4:
-			get_node("MiddleBar/Untitled"+str(tabs.get_current_tab())).select_all()
-		5:
-			get_node("MiddleBar/Untitled"+str(tabs.get_current_tab())).select_all()
-			get_node("MiddleBar/Untitled"+str(tabs.get_current_tab())).cut()
-		7:
-			get_node("MiddleBar/Untitled"+str(tabs.get_current_tab())).undo()
-		8:
-			get_node("MiddleBar/Untitled"+str(tabs.get_current_tab())).redo()
-
-func _on_options_menu_item_pressed(id):
-	match id:
-		0:
-			App.data["Settings"]["Fullscreen"] = !App.data["Settings"]["Fullscreen"]
-			OS.window_fullscreen = App.data["Settings"]["Fullscreen"]
-		1:
-			App.data["Settings"]["Maximized"] = !App.data["Settings"]["Maximized"]
-			OS.window_maximized = App.data["Settings"]["Maximized"]
-		2:
-			App.data["Settings"]["Always_on_Top"] = !App.data["Settings"]["Always_on_Top"]
-			OS.set_window_always_on_top(App.data["Settings"]["Always_on_Top"])
-		3:
-			App.data["Settings"]["Keep_Screen_On"] = !App.data["Settings"]["Keep_Screen_On"]
-			OS.keep_screen_on = App.data["Settings"]["Keep_Screen_On"]
-		5:
-			App.data["Settings"]["Show_Line_Numbers"] = !App.data["Settings"]["Show_Line_Numbers"]
-			update_editor()
-		6:
-			App.data["Settings"]["Enable_Word_Wrap"] = !App.data["Settings"]["Enable_Word_Wrap"]
-			update_editor()
-	
-	options_popup.set_item_checked(0, App.data["Settings"]["Fullscreen"])
-	options_popup.set_item_checked(1, App.data["Settings"]["Maximized"])
-	options_popup.set_item_checked(2, App.data["Settings"]["Always_on_Top"])
-	options_popup.set_item_checked(3, App.data["Settings"]["Keep_Screen_On"])
-	
-	options_popup.set_item_checked(5, App.data["Settings"]["Show_Line_Numbers"])
-	options_popup.set_item_checked(6, App.data["Settings"]["Enable_Word_Wrap"])
-	
-	App.save_data()
-
-func _on_theme_menu_item_pressed(id):
-	for i in themes.size():
-		var list_name = themes.keys()
-		match id:
-			i:
-				App.data["Settings"]["Current_Theme"] = theme_popup.get_item_text(i)
-				
-				$"/root/Main".theme = load(themes[list_name[i]])
-				theme_popup.set_item_checked(i, (App.data["Settings"]["Current_Theme"] == theme_popup.get_item_text(i)))
-		
-		for j in theme_popup.get_item_count():
-			theme_popup.set_item_checked(j, (App.data["Settings"]["Current_Theme"] == theme_popup.get_item_text(j)))
-	
-	App.save_data()
-
-func _on_about_menu_item_pressed(id):
-	match id:
-		0:
-			about_menu_window.popup()
 
 func _on_OpenFileDialog_file_selected(path):
 	var file = File.new()

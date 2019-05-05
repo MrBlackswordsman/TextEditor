@@ -5,13 +5,13 @@ var current_files = {}
 var current_file_name = ""
 
 const FILE_MENU_OPTIONS = ["New","Open", "", "Save","Save As", "", "Exit"]
+const FILE_MENU_OPTIONS_SUB = ["Fullscreen", "Maximize Window", "Always On Top", "Keep Screen On"]
 const EDIT_MENU_OPTIONS = ["Cut", "Copy", "Paste", "", "Select All", "Clear", "", "Undo", "Redo"]
-const OPTIONS_MENU_OPTIONS = ["Fullscreen", "Maximize Window", "Always On Top", "Keep Screen On", "", "Show Line Numbers","Enable Word Wrap"]
+const FORMAT_MENU_OPTIONS = ["Word Wrap", "Show Line Numbers"]
 
 const FILE_TYPES = PoolStringArray(["*.txt ; Text Document","*.html ; Hyper Text Markup Lang.", "*.css ; Cascading Style Sheets", "*.php : PHP: Hypertext Preprocessor"])
 
 const CONFIG_FILE = "user://config.cfg" 
-
 var config_file = ConfigFile.new()
 
 var data = {

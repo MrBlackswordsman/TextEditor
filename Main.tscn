@@ -1,24 +1,22 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://themes/White_Theme.tres" type="Theme" id=1]
 [ext_resource path="res://Main.gd" type="Script" id=2]
 [ext_resource path="res://fonts/DroidSans_font.tres" type="DynamicFont" id=3]
-[ext_resource path="res://fonts/DroidSans.ttf" type="DynamicFontData" id=4]
-
-[sub_resource type="StyleBoxFlat" id=1]
-bg_color = Color( 0.847059, 0.847059, 0.847059, 1 )
+[ext_resource path="res://menus/FileMenu.gd" type="Script" id=4]
+[ext_resource path="res://menus/EditMenu.gd" type="Script" id=5]
+[ext_resource path="res://fonts/DroidSans.ttf" type="DynamicFontData" id=6]
+[ext_resource path="res://menus/FormatMenu.gd" type="Script" id=7]
+[ext_resource path="res://menus/ThemeMenu.gd" type="Script" id=8]
+[ext_resource path="res://menus/HelpMenu.gd" type="Script" id=9]
 
 [sub_resource type="DynamicFont" id=2]
 use_mipmaps = true
-font_data = ExtResource( 4 )
-
-[sub_resource type="DynamicFont" id=3]
-use_mipmaps = true
-font_data = ExtResource( 4 )
+font_data = ExtResource( 6 )
 
 [sub_resource type="DynamicFont" id=4]
 use_mipmaps = true
-font_data = ExtResource( 4 )
+font_data = ExtResource( 6 )
 
 [node name="Main" type="Control"]
 anchor_right = 1.0
@@ -33,7 +31,6 @@ script = ExtResource( 2 )
 [node name="Background" type="Panel" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
-custom_styles/panel = SubResource( 1 )
 
 [node name="TopBar" type="Control" parent="."]
 anchor_right = 1.0
@@ -65,6 +62,7 @@ custom_fonts/font = ExtResource( 3 )
 text = "File"
 flat = false
 switch_on_hover = true
+script = ExtResource( 4 )
 
 [node name="EditMenu" type="MenuButton" parent="TopBar/MenuBar"]
 margin_left = 50.0
@@ -73,32 +71,37 @@ margin_bottom = 32.0
 custom_fonts/font = ExtResource( 3 )
 text = "Edit"
 switch_on_hover = true
+script = ExtResource( 5 )
 
-[node name="OptionsMenu" type="MenuButton" parent="TopBar/MenuBar"]
+[node name="FormatMenu" type="MenuButton" parent="TopBar/MenuBar"]
 margin_left = 101.0
-margin_right = 168.0
+margin_right = 164.0
 margin_bottom = 32.0
 custom_fonts/font = SubResource( 2 )
-text = "Options"
+text = "Format"
 switch_on_hover = true
+script = ExtResource( 7 )
 
 [node name="ThemeMenu" type="MenuButton" parent="TopBar/MenuBar"]
-margin_left = 183.0
-margin_right = 251.0
+margin_left = 179.0
+margin_right = 240.0
 margin_bottom = 32.0
-custom_fonts/font = SubResource( 3 )
-text = "Themes"
+custom_fonts/font = SubResource( 2 )
+text = "Theme"
 switch_on_hover = true
+script = ExtResource( 8 )
 
 [node name="HelpMenu" type="MenuButton" parent="TopBar/MenuBar"]
-margin_left = 266.0
-margin_right = 311.0
+margin_left = 255.0
+margin_right = 300.0
 margin_bottom = 32.0
 custom_fonts/font = SubResource( 4 )
 text = "Help"
 switch_on_hover = true
+script = ExtResource( 9 )
 
 [node name="MiddleBar" type="Control" parent="."]
+editor/display_folded = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_top = 34.0
@@ -137,6 +140,7 @@ hint_tooltip = "Create New Editor Tab"
 text = "+"
 
 [node name="BottomBar" type="Control" parent="."]
+editor/display_folded = true
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
